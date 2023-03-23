@@ -12,6 +12,7 @@ using namespace std;
 void resetRetA(int w, int h, int& xrA1, int& xrA2, int& yrA1, int& yrA2);
 void resetRet(int w, int h, int& xr1, int& xr2, int& yr1, int& yr2);
 void resetPala(int w, int h, int& xc, int& yc, bool& rimV, bool& rimL);
+void resetScoreSaveRecord(int& s, int& r);
 
 #define KEY_SEEN     1
 #define KEY_RELEASED 2
@@ -22,11 +23,11 @@ int main()
 {
     int w = 480, h = 640;  //variabili che indicano la dimensione della finestra
 
-    //variabili posizione retangolo
+    //variabili posizione rettangolo
     int xr1 = w / 2 - 50, yr1 = h - 10;
     int xr2 = w /2 + 50, yr2 = h - 20;
 
-    //variabili posizione retangolo automatico
+    //variabili posizione rettangolo automatico
     int xrA1 = w / 2 - 50, yrA1 = 10;
     int xrA2 = w / 2 + 50, yrA2 = 20;
     double centroRet = (xrA1 + xrA2) / 2;
@@ -37,11 +38,13 @@ int main()
     int raggio = 10;
 
     bool rimV = false;      //rimbalzo verticale
-    bool rimL = false;      //rimbazo laterale
+    bool rimL = false;      //rimbalzo laterale
     
-    //variabile per il puntegio
+    //variabile per il punteggio
     int score = 0;
+    int record = 0;
 
+    bool persa = false;
 
     al_init();
     al_init_primitives_addon();
@@ -62,7 +65,7 @@ int main()
     al_register_event_source(queue, al_get_display_event_source(display));
     al_register_event_source(queue, al_get_timer_event_source(timer));
 
-    //variabili per la chisura dell programma
+    //variabili per la chiusura del programma
     bool done = false;
     bool redraw = true;
 
@@ -121,11 +124,11 @@ int main()
             break;
         }
 
-        // controla se si vuole chiderre il programma tramite tasto 'ESC' o la 'X' che chide i programmi
+        // controlla se si vuole chiedere il programma tramite tasto 'ESC' o la 'X' che chiede i programmi
         if (done)
             break;
 
-        //muovimento dell retangolo automatico
+        //movimento del rettangolo automatico
 
         centroRet = (xrA1 + xrA2) / 2;
 
@@ -153,38 +156,47 @@ int main()
             rimL = true;
 
         //Rimbalzo verticale
-        if (yc < h - 20 - raggio && rimV == false) {
+       
+        if (yc < h - 20 - raggio && rimV == false ) {
             yc++;
         }
-        else if (xc >= xr1 && xc <= xr2)
+
+        else if (xc >= xr1 && xc <= xr2) {
             rimV = true;
-        else{
-            score++;
-            
-            //da impostare
-            resetRetA(w, h, xrA1, xrA2, yrA1, yrA2);
-            resetRet(w, h, xr1, xr2, yr1, yr2);
-            resetPala(w, h, xc, yc, rimV, rimL);
         }
-        
-            
-           
-        
+
         if (yc > 0 + 20 + raggio && rimV == true) {
             yc--;
         }
-        else
+        else {
             rimV = false;
-            
+        }
+
+        // conteggio del puntegio
+        if (yc == h - 20 - raggio && xc >= xr1 && xc <= xr2)
+            score++;
+
+        // reseta tutto alle impostazioni iniziali trane il Record che viene agiornato
+        if (yc == h - 20 - raggio && (xc <= xr1 || xc >= xr2)) {
+            resetRetA(w, h, xrA1, xrA2, yrA1, yrA2);
+            resetRet(w, h, xr1, xr2, yr1, yr2);
+            resetPala(w, h, xc, yc, rimV, rimL);
+            resetScoreSaveRecord(score, record);
+            persa = false;
+
+        }
+       
+           
 
         al_clear_to_color(al_map_rgb(220, 220, 220));
 
-        al_draw_textf(font, al_map_rgb(50, 50, 50), w/2, h/2, 0, "Score: %d", score);
+        al_draw_textf(font, al_map_rgb(50, 50, 50), w/2, h/2, ALLEGRO_ALIGN_CENTER, "Score: %d", score);
+        al_draw_textf(font, al_map_rgb(50, 50, 50), w / 2, h / 2 +40, ALLEGRO_ALIGN_CENTER, "Record: %d", record);
 
 
-        al_draw_filled_rectangle(xrA1, yrA1, xrA2, yrA2, al_map_rgb(0, 0, 0));    //retangolo computer
+        al_draw_filled_rectangle(xrA1, yrA1, xrA2, yrA2, al_map_rgb(0, 0, 0));    //rettangolo computer
 
-        al_draw_filled_rectangle(xr1, yr1, xr2, yr2, al_map_rgb(0, 0, 0));  //retangolo giocatore
+        al_draw_filled_rectangle(xr1, yr1, xr2, yr2, al_map_rgb(0, 0, 0));  //rettangolo giocatore
         al_draw_filled_circle(xc, yc, raggio, al_map_rgb(0, 0, 0));         //palina
 
         
@@ -200,7 +212,7 @@ int main()
 }
 
 void resetRetA(int w, int h, int &xrA1, int& xrA2, int& yrA1, int& yrA2) {
-    //variabili posizione retangolo automatico
+    //variabili posizione rettangolo automatico
     xrA1 = w / 2 - 50, yrA1 = 10;
     xrA2 = w / 2 + 50, yrA2 = 20;
     return;
@@ -208,7 +220,7 @@ void resetRetA(int w, int h, int &xrA1, int& xrA2, int& yrA1, int& yrA2) {
 
 void resetRet(int w, int h, int& xr1, int& xr2, int& yr1, int& yr2) {
 
-    //variabili posizione retangolo
+    //variabili posizione rettangolo
     xr1 = w / 2 - 50; 
     yr1 = h - 10;
     xr2 = w / 2 + 50;
@@ -223,8 +235,15 @@ void resetPala(int w, int h, int& xc, int& yc, bool& rimV, bool& rimL) {
     yc = h / 2;
     
     rimV = false;      //rimbalzo verticale
-    rimL = false;      //rimbazo laterale
+    rimL = false;      //rimbalzo laterale
     
+    return;
+}
+
+void resetScoreSaveRecord(int& s, int& r) {
+    if (s > r)
+        r = s;
+    s = 0;
     return;
 }
 
