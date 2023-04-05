@@ -6,13 +6,15 @@
 #include <allegro5/allegro_primitives.h>
 #include <allegro5/allegro_font.h>
 #include <allegro5/allegro_ttf.h>
+#include <allegro5/allegro_audio.h>
+#include <allegro5/allegro_acodec.h>
 
 using namespace std;
 
-void resetRetA(int w, int h, int& xrA1, int& xrA2, int& yrA1, int& yrA2);
-void resetRet(int w, int h, int& xr1, int& xr2, int& yr1, int& yr2);
-void resetPala(int w, int h, int& xc, int& yc, bool& rimV, bool& rimL);
-void resetScoreSaveRecord(int& s, int& r);
+void resetRetA(int w, int h, int& xrA1, int& xrA2, int& yrA1, int& yrA2);   //reseta valori inizialiretangolo automatico
+void resetRet(int w, int h, int& xr1, int& xr2, int& yr1, int& yr2);        //reseta valorei iniziali retangolo controlato da giocatore
+void resetPala(int w, int h, int& xc, int& yc, bool& rimV, bool& rimL);     //reseta i valori iniziali della pala
+void resetScoreSaveRecord(int& s, int& r);                                  //reseta il score  se salva il record in caso che sia maggiore al precedente
 
 #define KEY_SEEN     1
 #define KEY_RELEASED 2
@@ -50,14 +52,19 @@ int main()
     al_init_primitives_addon();
     al_init_font_addon();
     al_init_ttf_addon();
+    al_init_acodec_addon();
 
     al_install_keyboard();
+    al_install_audio();
+
+    al_reserve_samples(16);
 
     //variabili Allegro5
-    ALLEGRO_DISPLAY* display = al_create_display(w, h);
-    ALLEGRO_EVENT_QUEUE* queue = al_create_event_queue();
-    ALLEGRO_TIMER* timer = al_create_timer(1.0 / 244.0);
-    ALLEGRO_FONT* font = al_load_ttf_font("YARDSALE.TTF", 30, 0);
+    ALLEGRO_DISPLAY* display = al_create_display(w, h);             //dimensioni finestra
+    ALLEGRO_EVENT_QUEUE* queue = al_create_event_queue();           //coda eventi
+    ALLEGRO_TIMER* timer = al_create_timer(1.0 / 244.0);            //timer
+    ALLEGRO_FONT* font = al_load_ttf_font("YARDSALE.TTF", 30, 0);   //font
+    ALLEGRO_SAMPLE* suono = al_load_sample();                       //suono
 
     ALLEGRO_EVENT event;
 
@@ -181,9 +188,7 @@ int main()
             resetRetA(w, h, xrA1, xrA2, yrA1, yrA2);
             resetRet(w, h, xr1, xr2, yr1, yr2);
             resetPala(w, h, xc, yc, rimV, rimL);
-            resetScoreSaveRecord(score, record);
-            persa = false;
-
+            resetScoreSaveRecord(score, record);   
         }
        
            
@@ -203,8 +208,8 @@ int main()
         
 
         al_flip_display();
-
-        //al_rest(0.01);
+        
+       
 
     }
 
