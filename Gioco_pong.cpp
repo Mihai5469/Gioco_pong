@@ -46,7 +46,6 @@ int main()
     int score = 0;
     int record = 0;
 
-    bool persa = false;
 
     al_init();
     al_init_primitives_addon();
@@ -64,7 +63,8 @@ int main()
     ALLEGRO_EVENT_QUEUE* queue = al_create_event_queue();           //coda eventi
     ALLEGRO_TIMER* timer = al_create_timer(1.0 / 244.0);            //timer
     ALLEGRO_FONT* font = al_load_ttf_font("YARDSALE.TTF", 30, 0);   //font
-    ALLEGRO_SAMPLE* suono = al_load_sample();                       //suono
+    ALLEGRO_SAMPLE* suono = al_load_sample("ding2.mp3");                       //suono
+    ALLEGRO_SAMPLE* suono2 = al_load_sample("ding.mp3");                       //suono
 
     ALLEGRO_EVENT event;
 
@@ -82,6 +82,8 @@ int main()
 
     al_start_timer(timer);
     while (true) {
+
+        
 
         al_wait_for_event(queue, &event);
 
@@ -150,34 +152,57 @@ int main()
 
 
         //Rimbalzo laterale
+        //destra
         if (xc < w - raggio && rimL == true) {
             xc++;
         }
-        else
-            rimL = false;
+        else {
+            //suona
+            if (xc == w - raggio) {
+                al_play_sample(suono, 1.0, 0.0, 1.0, ALLEGRO_PLAYMODE_ONCE, NULL);
 
+            }
+            rimL = false;
+        }
+
+        //sinistra
         if (xc > 0 + raggio && rimL == false) {
             xc--;
         }
-        else
+        else {
+            //suona
+            if (xc == 0 + raggio) {
+                al_play_sample(suono, 1.0, 0.0, 1.0, ALLEGRO_PLAYMODE_ONCE, NULL);
+            }
             rimL = true;
-
+        }
         //Rimbalzo verticale
-       
+        
+        //giu
         if (yc < h - 20 - raggio && rimV == false ) {
             yc++;
         }
 
         else if (xc >= xr1 && xc <= xr2) {
+            //suona
+            if (yc == h - 20 - raggio) {
+                al_play_sample(suono2, 1.0, 0.0, 1.0, ALLEGRO_PLAYMODE_ONCE, NULL);
+            }
             rimV = true;
         }
-
+        //su
         if (yc > 0 + 20 + raggio && rimV == true) {
             yc--;
         }
-        else {
+        else if (xc >= xrA1 && xc <= xrA2) {
+            //suona
+            if (yc == 0 + 20 + raggio) {
+                al_play_sample(suono2, 1.0, 0.0, 1.0, ALLEGRO_PLAYMODE_ONCE, NULL);
+            }
             rimV = false;
         }
+
+
 
         // conteggio del puntegio
         if (yc == h - 20 - raggio && xc >= xr1 && xc <= xr2)
@@ -204,13 +229,9 @@ int main()
         al_draw_filled_rectangle(xr1, yr1, xr2, yr2, al_map_rgb(0, 0, 0));  //rettangolo giocatore
         al_draw_filled_circle(xc, yc, raggio, al_map_rgb(0, 0, 0));         //palina
 
-        
-        
-
         al_flip_display();
         
-       
-
+        
     }
 
     return 0;
