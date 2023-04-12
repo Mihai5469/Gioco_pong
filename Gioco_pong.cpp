@@ -64,7 +64,8 @@ int main()
     ALLEGRO_EVENT_QUEUE* queue = al_create_event_queue();           //coda eventi
     ALLEGRO_TIMER* timer = al_create_timer(1.0 / 244.0);            //timer
     ALLEGRO_FONT* font = al_load_ttf_font("YARDSALE.TTF", 30, 0);   //font
-    ALLEGRO_FONT* font2 = al_load_ttf_font("YARDSALE.TTF", 10, 0);   //font
+    ALLEGRO_FONT* font2 = al_load_ttf_font("YARDSALE.TTF", 12, 0);   //font
+    ALLEGRO_FONT* font3 = al_load_ttf_font("YARDSALE.TTF", 20, 0);   //font
     ALLEGRO_SAMPLE* suono = al_load_sample("ding2.mp3");            //suono
     ALLEGRO_SAMPLE* suono2 = al_load_sample("ding.mp3");            //suono
 
@@ -226,11 +227,14 @@ int main()
 
         al_clear_to_color(al_map_rgb(220, 220, 220));
 
+        //scrita dell pyunteggio 
         if (start) {
             al_draw_textf(font2, al_map_rgb(50, 50, 50), 0, 20, 0, "Score: %d    Record: %d", score, record);
         }
         else {
             al_draw_textf(font, al_map_rgb(50, 50, 50), w / 2, h / 2 + 50, ALLEGRO_ALIGN_CENTER, "Record: %d", record);
+            al_draw_textf(font3, al_map_rgb(50, 50, 50), w / 2, h / 2 + 90, ALLEGRO_ALIGN_CENTER, "Premi un pulsnte per il start");
+
         }
 
         al_draw_filled_rectangle(xrA1, yrA1, xrA2, yrA2, al_map_rgb(0, 0, 0));    //rettangolo computer
